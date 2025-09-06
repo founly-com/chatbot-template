@@ -308,7 +308,8 @@
             fontColor: '#333333'
         },
         metadata: {
-            userId: ''
+            userId: '',
+            userName: ''
         }
     };
 
@@ -406,7 +407,8 @@
             sessionId: currentSessionId,
             route: config.webhook.route,
             metadata: {
-                userId: config.metadata.userId
+                userId: config.metadata.userId,
+                userName: config.metadata.userName
             }
         }];
 
@@ -441,7 +443,8 @@
             route: config.webhook.route,
             chatInput: message,
             metadata: {
-                userId: ""
+                userId: config.metadata.userId,
+                userName: config.metadata.userName
             }
         };
 
