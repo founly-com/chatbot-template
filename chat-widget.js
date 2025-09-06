@@ -306,6 +306,9 @@
             position: 'right',
             backgroundColor: '#ffffff',
             fontColor: '#333333'
+        },
+        metadata: {
+            userId: ''
         }
     };
 
@@ -314,7 +317,8 @@
         {
             webhook: { ...defaultConfig.webhook, ...window.ChatWidgetConfig.webhook },
             branding: { ...defaultConfig.branding, ...window.ChatWidgetConfig.branding },
-            style: { ...defaultConfig.style, ...window.ChatWidgetConfig.style }
+            style: { ...defaultConfig.style, ...window.ChatWidgetConfig.style },
+            metadata: { ...defaultConfig.metadata, ...window.ChatWidgetConfig.metadata }
         } : defaultConfig;
 
     // Prevent multiple initializations
@@ -402,7 +406,7 @@
             sessionId: currentSessionId,
             route: config.webhook.route,
             metadata: {
-                userId: ""
+                userId: config.metadata.userId
             }
         }];
 
