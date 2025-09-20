@@ -414,7 +414,7 @@
 
         try {
             const response = await fetch(config.webhook.url, {
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -475,12 +475,96 @@
         }
     }
 
-    newChatBtn.addEventListener('click', startNewConversation);
+    async function handleResponse(response) {
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new ApiError(
+                errorData.message || 'An error occurred',
+                response.status
+            );
+        }
+        return response.json();
+    }
+
+    async function getConversationHistory() {
+        try {
+            const res = await fetch(`${API_BASE_URL}/get-conversation-history`);
+            return handleResponse(res);
+        } catch (error) {
+            throw new ApiError(
+                'Failed to fetch conversation history',
+                error.status || 500
+            );
+        }
+    }
+
+    async function sendMessage2(message) {
+        if (!message?.trim()) {
+            throw new ApiError('Message cannot be empty', 400);
+        }
+
+        try {
+            const res = await fetch(
+                `${API_BASE_URL}/send-prompt?prompt=${encodeURIComponent(message)}`,
+                { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return handleResponse(res);
+        } catch (error) {
+            throw new ApiError(
+                'Failed to send message',
+                error.status || 500
+            );
+        }
+    };
+
+    async function startWorkflow() {
+        try {
+            const res = await fetch(
+                `${API_BASE_URL}/start-workflow`,
+                { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return handleResponse(res);
+        } catch (error) {
+            throw new ApiError(
+                'Failed to start workflow',
+                error.status || 500
+            );
+        }
+    }
+
+    async function confirm() {
+        try {
+            const res = await fetch(`${API_BASE_URL}/confirm`, { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            return handleResponse(res);
+        } catch (error) {
+            throw new ApiError(
+                'Failed to confirm action',
+                error.status || 500
+            );
+        }
+    }
+
+    newChatBtn.addEventListener('click', startWorkflow);
     
     sendButton.addEventListener('click', () => {
         const message = textarea.value.trim();
         if (message) {
-            sendMessage(message);
+            sendMessage2(message);
             textarea.value = '';
         }
     });
@@ -490,7 +574,7 @@
             e.preventDefault();
             const message = textarea.value.trim();
             if (message) {
-                sendMessage(message);
+                sendMessage2(message);
                 textarea.value = '';
             }
         }
